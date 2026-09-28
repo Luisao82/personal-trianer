@@ -153,8 +153,9 @@ textarea { resize: vertical; }
 .primary.undo { background: var(--ok); box-shadow: inset var(--edge) var(--edge) 0 #8fdc9c, inset calc(var(--edge) * -1) calc(var(--edge) * -1) 0 #2f8a41, var(--edge) var(--edge) 0 var(--ink); }
 
 /* Acceso */
-.login { padding-top: 12vh; }
-.login h1 { font-size: 16px; }
+.login { padding-top: 4vh; }
+.login h1 { font-size: 14px; text-align: center; }
+.logo { display: block; width: min(100%, 300px); height: auto; margin: 0 auto 8px; image-rendering: pixelated; }
 .login form { display: grid; gap: 10px; margin-top: 28px; padding-right: var(--edge); }
 .login label { font-weight: 600; }
 .msg { color: var(--bad); margin: 4px 0 0; font-weight: 600; }

@@ -174,6 +174,7 @@ function Login({ onEnter }) {
   };
   return (
     <div className="app login">
+      <img className="logo" src="/logo.png" width="320" height="320" alt="Personal Trianer" />
       <h1>Diario de calistenia</h1>
       <form onSubmit={submit}>
         <label htmlFor="pin">PIN de acceso</label>
