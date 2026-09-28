@@ -1,4 +1,5 @@
-// Plan de las dos primeras semanas. Empieza el jueves 1 de octubre de 2026.
+// Plan de las dos primeras semanas: 3 sesiones por semana, sin fechas fijas.
+// La fecha real de cada entreno se guarda al hacerlo.
 // Cada ejercicio define series y objetivo para la semana 1 y la semana 2.
 
 export const WARMUP = [
@@ -46,13 +47,14 @@ export const DAYS = {
   },
 };
 
-export const CALENDAR = [
-  { date: "2026-10-01", day: "A", week: 1 },
-  { date: "2026-10-03", day: "B", week: 1 },
-  { date: "2026-10-06", day: "C", week: 1 },
-  { date: "2026-10-08", day: "A", week: 2 },
-  { date: "2026-10-10", day: "B", week: 2 },
-  { date: "2026-10-13", day: "C", week: 2 },
+// Sesiones en orden. El id es la clave con la que se guardan en el móvil y en Notion.
+export const SESSIONS = [
+  { id: "s1-A", day: "A", week: 1 },
+  { id: "s1-B", day: "B", week: 1 },
+  { id: "s1-C", day: "C", week: 1 },
+  { id: "s2-A", day: "A", week: 2 },
+  { id: "s2-B", day: "B", week: 2 },
+  { id: "s2-C", day: "C", week: 2 },
 ];
 
 export const WEEK_RULES = {

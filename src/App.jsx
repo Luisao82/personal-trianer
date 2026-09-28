@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CALENDAR, DAYS, WARMUP, WEEK_RULES } from "./plan.js";
+import { SESSIONS, DAYS, WARMUP, WEEK_RULES } from "./plan.js";
 import { fetchSessions, pushSession } from "./api.js";
 import { buildSummary, formatDate } from "./summary.js";
 
-const STORE_KEY = "calistenia-log-v1";
+// v2: las sesiones se identifican por id (s1-A...) en lugar de por fecha.
+const STORE_KEY = "calistenia-log-v2";
 const PIN_KEY = "calistenia-pin";
 const ESTADOS = ["Bien", "Molestia", "Dolor"];
 const RIRS = ["0", "1", "2", "3+"];
@@ -11,7 +12,7 @@ const RIRS = ["0", "1", "2", "3+"];
 const emptySession = () => ({
   done: {}, result: {}, rir: {},
   hombros: "", codos: "", munecas: "",
-  comment: "", completed: false, updatedAt: 0, synced: true,
+  date: "", comment: "", completed: false, updatedAt: 0, synced: true,
 });
 
 const loadStore = () => {
@@ -35,6 +36,7 @@ export default function App() {
   const [store, setStore] = useState(loadStore);
   const [syncError, setSyncError] = useState("");
   const [open, setOpen] = useState(null);
+  const [screen, setScreen] = useState("home");
 
   const storeRef = useRef(store);
   storeRef.current = store;
@@ -48,6 +50,7 @@ export default function App() {
     localStorage.removeItem(PIN_KEY);
     setPin("");
     setAuthed(false);
+    setScreen("home");
   }, []);
 
   // Trae lo guardado en Notion. Devuelve "ok", "denied", "offline" o "error:<mensaje>".
@@ -57,9 +60,9 @@ export default function App() {
       setStore((prev) => {
         const out = { ...prev };
         for (const r of remote) {
-          const local = out[r.date];
+          const local = out[r.id];
           if (!local || (local.synced && (r.data.updatedAt || 0) > local.updatedAt)) {
-            out[r.date] = { ...emptySession(), ...r.data, synced: true };
+            out[r.id] = { ...emptySession(), ...r.data, synced: true };
           }
         }
         return out;
@@ -82,15 +85,15 @@ export default function App() {
     if (syncing.current || !pin) return;
     syncing.current = true;
     try {
-      for (const entry of CALENDAR) {
-        const s = storeRef.current[entry.date];
+      for (const entry of SESSIONS) {
+        const s = storeRef.current[entry.id];
         if (!s || s.synced) continue;
         const stamp = s.updatedAt;
         const { synced, ...data } = s;
-        await pushSession(pin, { date: entry.date, day: entry.day, week: entry.week, data, summary: buildSummary(entry, s) });
+        await pushSession(pin, { id: entry.id, day: entry.day, week: entry.week, data, summary: buildSummary(entry, s) });
         setStore((prev) => {
-          const cur = prev[entry.date];
-          return cur && cur.updatedAt === stamp ? { ...prev, [entry.date]: { ...cur, synced: true } } : prev;
+          const cur = prev[entry.id];
+          return cur && cur.updatedAt === stamp ? { ...prev, [entry.id]: { ...cur, synced: true } } : prev;
         });
       }
       setSyncError("");
@@ -115,12 +118,14 @@ export default function App() {
     return () => window.removeEventListener("online", sync);
   }, [sync]);
 
-  const update = (date, fn) =>
+  // La fecha del entreno se pone sola con hoy la primera vez que se toca algo.
+  const update = (id, fn) =>
     setStore((prev) => {
-      const next = fn(structuredClone(prev[date] || emptySession()));
+      const next = fn(structuredClone(prev[id] || emptySession()));
+      if (!next.date) next.date = todayISO();
       next.updatedAt = Date.now();
       next.synced = false;
-      return { ...prev, [date]: next };
+      return { ...prev, [id]: next };
     });
 
   if (!authed) {
@@ -140,23 +145,25 @@ export default function App() {
     : syncError ? ["Error al sincronizar, reintentando", "bad"]
     : pending ? ["Guardando…", "warn"] : ["Guardado en Notion", "ok"];
 
-  const entry = CALENDAR.find((c) => c.date === open);
+  const entry = SESSIONS.find((c) => c.id === open);
 
   return (
     <div className="app">
       <header className="top">
-        <h1>{entry ? `Día ${entry.day}` : "Diario de calistenia"}</h1>
+        <h1>{entry ? `Día ${entry.day}` : screen === "home" ? "Diario de calistenia" : "Sesiones"}</h1>
         <span className={`status ${status[1]}`} role="status">{status[0]}</span>
       </header>
       {entry ? (
         <SessionView
           entry={entry}
-          s={store[entry.date] || emptySession()}
-          update={(fn) => update(entry.date, fn)}
+          s={store[entry.id] || emptySession()}
+          update={(fn) => update(entry.id, fn)}
           back={() => setOpen(null)}
         />
+      ) : screen === "home" ? (
+        <Home onStart={() => setScreen("sessions")} onLogout={logout} />
       ) : (
-        <SessionList store={store} onOpen={setOpen} onLogout={logout} />
+        <SessionList store={store} onOpen={setOpen} onHome={() => setScreen("home")} />
       )}
     </div>
   );
@@ -174,7 +181,6 @@ function Login({ onEnter }) {
   };
   return (
     <div className="app login">
-      <img className="logo" src="/logo.png" width="320" height="320" alt="Personal Trianer" />
       <h1>Diario de calistenia</h1>
       <form onSubmit={submit}>
         <label htmlFor="pin">PIN de acceso</label>
@@ -187,32 +193,45 @@ function Login({ onEnter }) {
   );
 }
 
-function SessionList({ store, onOpen, onLogout }) {
-  const today = todayISO();
-  const next = CALENDAR.find((c) => c.date >= today && !store[c.date]?.completed);
+function Home({ onStart, onLogout }) {
+  return (
+    <main className="home">
+      <img className="logo" src="/logo.png" width="320" height="320" alt="Personal Trianer" />
+      <p className="lead">
+        Calistenia y control corporal, tres sesiones por semana. Marca cada serie, apunta cómo están hombros, codos y muñecas y todo se guarda en Notion.
+      </p>
+      <button className="primary" onClick={onStart}>Entrenar</button>
+      <button className="link" onClick={onLogout}>Cerrar sesión en este móvil</button>
+    </main>
+  );
+}
+
+function SessionList({ store, onOpen, onHome }) {
+  const next = SESSIONS.find((c) => !store[c.id]?.completed);
   return (
     <main>
+      <button className="link" onClick={onHome}>Volver al inicio</button>
       {[1, 2].map((week) => (
         <section key={week}>
           <h2>Semana {week}</h2>
           <p className="rule">{WEEK_RULES[week]}</p>
           <ul className="cards">
-            {CALENDAR.filter((c) => c.week === week).map((c) => {
-              const s = store[c.date];
+            {SESSIONS.filter((c) => c.week === week).map((c) => {
+              const s = store[c.id];
               const done = doneCount(c, s);
               const total = totalSets(c);
-              const isNext = next?.date === c.date;
+              const isNext = next?.id === c.id;
               return (
-                <li key={c.date}>
-                  <button className={`card ${s?.completed ? "finished" : ""} ${isNext ? "next" : ""}`} onClick={() => onOpen(c.date)}>
+                <li key={c.id}>
+                  <button className={`card ${s?.completed ? "finished" : ""} ${isNext ? "next" : ""}`} onClick={() => onOpen(c.id)}>
                     <span className="letter" aria-hidden="true">{c.day}</span>
                     <span className="info">
                       <strong>{DAYS[c.day].name}</strong>
-                      <span>{formatDate(c.date)}</span>
+                      <span>{s?.date ? `Entrenada el ${formatDate(s.date)}` : "Sin empezar"}</span>
                       <span className="meter"><i style={{ width: `${(done / total) * 100}%` }} /></span>
                     </span>
                     <span className="tag">
-                      {s?.completed ? "Completada" : c.date === today ? "Hoy" : isNext ? "Siguiente" : `${done}/${total}`}
+                      {s?.completed ? "Completada" : isNext ? "Siguiente" : `${done}/${total}`}
                     </span>
                   </button>
                 </li>
@@ -221,7 +240,6 @@ function SessionList({ store, onOpen, onLogout }) {
           </ul>
         </section>
       ))}
-      <button className="link" onClick={onLogout}>Cerrar sesión en este móvil</button>
     </main>
   );
 }
@@ -244,9 +262,11 @@ function SessionView({ entry, s, update, back }) {
 
   return (
     <main>
-      <button className="link" onClick={back}>Volver al calendario</button>
+      <button className="link" onClick={back}>Volver a las sesiones</button>
       <h2>{day.name}</h2>
-      <p className="rule">{formatDate(entry.date)}, semana {entry.week}. {WEEK_RULES[entry.week]}</p>
+      <p className="rule">
+        Semana {entry.week}{s.date ? `, entrenada el ${formatDate(s.date)}` : ""}. {WEEK_RULES[entry.week]}
+      </p>
 
       <details className="warmup">
         <summary>Calentamiento (8-10 min)</summary>
@@ -303,6 +323,9 @@ function SessionView({ entry, s, update, back }) {
         {[s.hombros, s.codos, s.munecas].includes("Dolor") && (
           <p className="alert" role="alert">Si es dolor punzante y no fatiga, quita ese ejercicio y cuéntamelo antes de la siguiente sesión.</p>
         )}
+        <label>Día que entrenaste
+          <input type="date" value={s.date} max={todayISO()} onChange={(e) => setField("date", e.target.value)} />
+        </label>
         <label>Comentario (opcional)
           <textarea rows="3" value={s.comment} onChange={(e) => setField("comment", e.target.value)} />
         </label>

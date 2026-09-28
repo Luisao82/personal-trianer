@@ -7,16 +7,16 @@ export default async function handler(req, res) {
 
   try {
     const result = await notion(`/databases/${DATABASE_ID}/query`, "POST", {
-      sorts: [{ property: "Fecha", direction: "ascending" }],
       page_size: 100,
     });
     const sessions = [];
     for (const page of result.results) {
-      const date = page.properties?.Fecha?.date?.start;
+      const week = page.properties?.Semana?.number;
+      const day = page.properties?.Dia?.select?.name;
       const raw = plain(page.properties?.Datos?.rich_text);
-      if (!date || !raw) continue;
+      if (!week || !day || !raw) continue;
       try {
-        sessions.push({ date, data: JSON.parse(raw) });
+        sessions.push({ id: `s${week}-${day}`, data: JSON.parse(raw) });
       } catch {
         // Fila con datos editados a mano que ya no son JSON válido: se ignora.
       }

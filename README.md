@@ -31,4 +31,4 @@ Si cambias una variable de entorno en Vercel hay que hacer **Redeploy** para que
 - El PIN se comprueba en el servidor en cada petición. El token de Notion nunca llega al navegador.
 
 ## Cambiar el plan
-Edita `src/plan.js` (ejercicios, series, objetivos y calendario) y haz push.
+Edita `src/plan.js` (ejercicios, series, objetivos y sesiones) y haz push. Las sesiones no tienen fecha fija: la fecha real se guarda al entrenar y se puede corregir dentro de cada sesión.

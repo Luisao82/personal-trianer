@@ -122,6 +122,7 @@ input, textarea {
 }
 input::placeholder, textarea::placeholder { color: #6f8ca0; }
 textarea { resize: vertical; }
+input[type="date"] { color-scheme: dark; min-height: 48px; }
 
 .rir, .estado { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .rir > span, .estado > span { flex: 1 0 100%; font-size: 16px; color: var(--muted); }
@@ -153,12 +154,18 @@ textarea { resize: vertical; }
 .primary.undo { background: var(--ok); box-shadow: inset var(--edge) var(--edge) 0 #8fdc9c, inset calc(var(--edge) * -1) calc(var(--edge) * -1) 0 #2f8a41, var(--edge) var(--edge) 0 var(--ink); }
 
 /* Acceso */
-.login { padding-top: 4vh; }
+.login { padding-top: 12vh; }
 .login h1 { font-size: 14px; text-align: center; }
 .logo { display: block; width: min(100%, 300px); height: auto; margin: 0 auto 8px; image-rendering: pixelated; }
 .login form { display: grid; gap: 10px; margin-top: 28px; padding-right: var(--edge); }
 .login label { font-weight: 600; }
 .msg { color: var(--bad); margin: 4px 0 0; font-weight: 600; }
+
+/* Inicio */
+.home { text-align: center; padding-top: 8px; }
+.home .logo { width: min(100%, 340px); margin-bottom: 4px; }
+.lead { max-width: 34ch; margin: 8px auto 0; font-size: 19px; }
+.home .primary { width: calc(100% - var(--edge)); margin-top: 24px; }
 
 @media (prefers-reduced-motion: reduce) {
   .card:active, .set:active, .primary:active, .rir button:active, .estado button:active { transform: none; }

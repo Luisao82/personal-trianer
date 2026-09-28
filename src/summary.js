@@ -6,7 +6,7 @@ export const formatDate = (d) =>
 // Texto legible que se guarda en Notion para poder leerlo de un vistazo.
 export function buildSummary(entry, s) {
   const day = DAYS[entry.day];
-  const lines = [`Día ${entry.day} (${day.name}), semana ${entry.week}, ${entry.date}`];
+  const lines = [`Día ${entry.day} (${day.name}), semana ${entry.week}${s.date ? `, entrenada el ${s.date}` : ""}`];
   for (const e of day.exercises) {
     const cfg = e.weeks[entry.week - 1];
     const done = (s.done?.[e.id] || []).filter(Boolean).length;
