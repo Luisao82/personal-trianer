@@ -315,6 +315,8 @@ function SessionView({ entry, s, update, back }) {
         const done = s.done[ex.id] || [];
         return (
           <section className={`exercise ${ex.block}`} key={ex.id}>
+            <div className="fisio-art calis" role="img" aria-label={`Dibujo del ejercicio: ${ex.name}`}
+              style={{ backgroundImage: `url(/calistenia/${ex.id}.png)` }} />
             <div className="ex-head">
               <h3>{ex.name}</h3>
               <span className="target">{cfg.sets} x {cfg.target}</span>
