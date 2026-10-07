@@ -37,6 +37,3 @@ Edita `src/plan.js` (ejercicios, series, objetivos y sesiones) y haz push. Las s
 Sección aparte (botón "Fisio" en el inicio) con los ejercicios del fisio, siempre los mismos y con su dibujo en pixel art.
 - Ejercicios, series y repeticiones: `src/fisio.js`. Dibujos: `public/fisio/<id>.png` (hoja de 2 fotogramas de 64x40 px que se alternan).
 - Se guarda una fila de Notion por día, en la misma base de datos, con `Dia` = "Fisio", sin semana y con nombre "Fisio AAAA-MM-DD". La opción "Fisio" de la propiedad `Dia` la crea Notion sola la primera vez.
-
-## Dibujos de los ejercicios de calistenia
-Cada ejercicio de `src/plan.js` tiene su animación en `public/calistenia/<id>.png`: hoja de 2 fotogramas de 64x56 px que se alternan dentro del bloque del ejercicio. Si añades un ejercicio nuevo al plan, añade también su PNG con el mismo `id`.
