@@ -1,4 +1,5 @@
 import { DAYS } from "./plan.js";
+import { FISIO } from "./fisio.js";
 
 export const formatDate = (d) =>
   new Date(d + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
@@ -18,5 +19,18 @@ export function buildSummary(entry, s) {
   lines.push(`Hombros: ${s.hombros || "sin marcar"} | Codos: ${s.codos || "sin marcar"} | Muñecas: ${s.munecas || "sin marcar"}`);
   if (s.comment) lines.push(`Comentario: ${s.comment}`);
   lines.push(s.completed ? "Sesión completada" : "Sesión sin completar");
+  return lines.join("\n");
+}
+
+// Resumen de la rutina de fisio de un día.
+export function buildFisioSummary(date, s) {
+  const lines = [`Fisio del ${date}`];
+  for (const e of FISIO) {
+    const done = (s.done?.[e.id] || []).filter(Boolean).length;
+    lines.push(`${e.name} (${e.zone}): ${done}/${e.sets} series de ${e.target}`);
+  }
+  lines.push(`Cómo estás: ${s.estado || "sin marcar"}`);
+  if (s.comment) lines.push(`Comentario: ${s.comment}`);
+  lines.push(s.completed ? "Fisio completada" : "Fisio sin completar");
   return lines.join("\n");
 }

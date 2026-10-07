@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SESSIONS, DAYS, WARMUP, WEEK_RULES } from "./plan.js";
 import { fetchSessions, pushSession } from "./api.js";
-import { buildSummary, formatDate } from "./summary.js";
+import { buildSummary, buildFisioSummary, formatDate } from "./summary.js";
+import { FISIO, FISIO_INTRO } from "./fisio.js";
 
 // v2: las sesiones se identifican por id (s1-A...) en lugar de por fecha.
 const STORE_KEY = "calistenia-log-v2";
@@ -14,6 +15,17 @@ const emptySession = () => ({
   hombros: "", codos: "", munecas: "",
   date: "", comment: "", completed: false, updatedAt: 0, synced: true,
 });
+
+// Fisio: una entrada por día, con id "f-AAAA-MM-DD".
+const emptyFisio = (date) => ({
+  done: {}, estado: "", date, comment: "", completed: false, updatedAt: 0, synced: true,
+});
+const fisioId = (date) => `f-${date}`;
+const emptyFor = (id) => (id.startsWith("f-") ? emptyFisio(id.slice(2)) : emptySession());
+const fisioEntries = (store) =>
+  Object.keys(store).filter((k) => k.startsWith("f-")).map((k) => ({ id: k, kind: "fisio", date: k.slice(2) }));
+const fisioDone = (s) => FISIO.reduce((n, e) => n + (s?.done?.[e.id] || []).filter(Boolean).length, 0);
+const FISIO_TOTAL = FISIO.reduce((n, e) => n + e.sets, 0);
 
 const loadStore = () => {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
@@ -37,6 +49,7 @@ export default function App() {
   const [syncError, setSyncError] = useState("");
   const [open, setOpen] = useState(null);
   const [screen, setScreen] = useState("home");
+  const [fisioDate, setFisioDate] = useState(todayISO);
 
   const storeRef = useRef(store);
   storeRef.current = store;
@@ -62,7 +75,7 @@ export default function App() {
         for (const r of remote) {
           const local = out[r.id];
           if (!local || (local.synced && (r.data.updatedAt || 0) > local.updatedAt)) {
-            out[r.id] = { ...emptySession(), ...r.data, synced: true };
+            out[r.id] = { ...emptyFor(r.id), ...r.data, synced: true };
           }
         }
         return out;
@@ -85,12 +98,16 @@ export default function App() {
     if (syncing.current || !pin) return;
     syncing.current = true;
     try {
-      for (const entry of SESSIONS) {
+      for (const entry of [...SESSIONS, ...fisioEntries(storeRef.current)]) {
         const s = storeRef.current[entry.id];
         if (!s || s.synced) continue;
         const stamp = s.updatedAt;
         const { synced, ...data } = s;
-        await pushSession(pin, { id: entry.id, day: entry.day, week: entry.week, data, summary: buildSummary(entry, s) });
+        if (entry.kind === "fisio") {
+          await pushSession(pin, { id: entry.id, kind: "fisio", data, summary: buildFisioSummary(entry.date, s) });
+        } else {
+          await pushSession(pin, { id: entry.id, day: entry.day, week: entry.week, data, summary: buildSummary(entry, s) });
+        }
         setStore((prev) => {
           const cur = prev[entry.id];
           return cur && cur.updatedAt === stamp ? { ...prev, [entry.id]: { ...cur, synced: true } } : prev;
@@ -128,6 +145,17 @@ export default function App() {
       return { ...prev, [id]: next };
     });
 
+  // Igual que update, pero para el fisio de un día (la fecha es la del id).
+  const updateFisio = (date, fn) =>
+    setStore((prev) => {
+      const id = fisioId(date);
+      const next = fn(structuredClone(prev[id] || emptyFisio(date)));
+      next.date = date;
+      next.updatedAt = Date.now();
+      next.synced = false;
+      return { ...prev, [id]: next };
+    });
+
   if (!authed) {
     return <Login onEnter={async (p) => {
       const r = await hydrate(p);
@@ -150,7 +178,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="top">
-        <h1>{entry ? `Día ${entry.day}` : screen === "home" ? "Diario de calistenia" : "Sesiones"}</h1>
+        <h1>{entry ? `Día ${entry.day}` : screen === "home" ? "Diario de calistenia" : screen === "fisio" ? "Fisio" : "Sesiones"}</h1>
         <span className={`status ${status[1]}`} role="status">{status[0]}</span>
       </header>
       {entry ? (
@@ -161,7 +189,15 @@ export default function App() {
           back={() => setOpen(null)}
         />
       ) : screen === "home" ? (
-        <Home onStart={() => setScreen("sessions")} onLogout={logout} />
+        <Home onStart={() => setScreen("sessions")} onFisio={() => setScreen("fisio")} onLogout={logout} />
+      ) : screen === "fisio" ? (
+        <FisioView
+          store={store}
+          date={fisioDate}
+          setDate={setFisioDate}
+          update={(fn) => updateFisio(fisioDate, fn)}
+          back={() => setScreen("home")}
+        />
       ) : (
         <SessionList store={store} onOpen={setOpen} onHome={() => setScreen("home")} />
       )}
@@ -193,7 +229,7 @@ function Login({ onEnter }) {
   );
 }
 
-function Home({ onStart, onLogout }) {
+function Home({ onStart, onFisio, onLogout }) {
   return (
     <main className="home">
       <img className="logo" src="/logo.png" width="320" height="320" alt="Personal Trianer" />
@@ -201,6 +237,7 @@ function Home({ onStart, onLogout }) {
         Calistenia y control corporal, tres sesiones por semana. Marca cada serie, apunta cómo están hombros, codos y muñecas y todo se guarda en Notion.
       </p>
       <button className="primary" onClick={onStart}>Entrenar</button>
+      <button className="secondary" onClick={onFisio}>Fisio</button>
       <button className="link" onClick={onLogout}>Cerrar sesión en este móvil</button>
     </main>
   );
@@ -331,6 +368,96 @@ function SessionView({ entry, s, update, back }) {
         </label>
         <button className={`primary ${s.completed ? "undo" : ""}`} onClick={() => setField("completed", !s.completed)}>
           {s.completed ? "Sesión completada. Desmarcar" : "Marcar sesión completada"}
+        </button>
+      </section>
+    </main>
+  );
+}
+
+const shortDate = (d) => new Date(d + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+
+function FisioView({ store, date, setDate, update, back }) {
+  const s = store[fisioId(date)] || emptyFisio(date);
+  const toggle = (ex, i) =>
+    update((d) => {
+      const arr = d.done[ex.id]?.slice() || Array(ex.sets).fill(false);
+      arr[i] = !arr[i];
+      d.done[ex.id] = arr;
+      return d;
+    });
+  const setField = (field, value) => update((d) => ({ ...d, [field]: value }));
+  const recent = fisioEntries(store).map((e) => e.date).sort().reverse().slice(0, 7);
+  const done = fisioDone(s);
+
+  return (
+    <main>
+      <button className="link" onClick={back}>Volver al inicio</button>
+      <h2>Rutina del fisio</h2>
+      <p className="rule">{FISIO_INTRO}</p>
+
+      <label className="daypick">Día
+        <input type="date" value={date} max={todayISO()} onChange={(e) => e.target.value && setDate(e.target.value)} />
+      </label>
+      {recent.length > 0 && (
+        <div className="recent" role="group" aria-label="Últimos días con fisio">
+          <span>Últimos días</span>
+          {recent.map((d) => {
+            const r = store[fisioId(d)];
+            return (
+              <button key={d} aria-pressed={d === date}
+                className={`chip ${d === date ? "on" : ""} ${r?.completed ? "finished" : ""}`}
+                onClick={() => setDate(d)}>
+                {shortDate(d)} · {fisioDone(r)}/{FISIO_TOTAL}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      <p className="progress">
+        {s.completed ? "Fisio completada" : `${done}/${FISIO_TOTAL} series`}
+        <span className="meter"><i style={{ width: `${(done / FISIO_TOTAL) * 100}%` }} /></span>
+      </p>
+
+      {FISIO.map((ex) => {
+        const marks = s.done[ex.id] || [];
+        return (
+          <section className="exercise" key={ex.id}>
+            <div className="fisio-art" role="img" aria-label={`Dibujo del ejercicio: ${ex.name}`}
+              style={{ backgroundImage: `url(/fisio/${ex.id}.png)` }} />
+            <div className="ex-head">
+              <h3>{ex.name}</h3>
+              <span className="target">{ex.sets} x {ex.target}</span>
+            </div>
+            <p className="zone">{ex.zone}</p>
+            <p className="note">{ex.note}</p>
+            <div className="sets" role="group" aria-label={`Series de ${ex.name}`}>
+              {Array.from({ length: ex.sets }, (_, i) => (
+                <button key={i} className={`set ${marks[i] ? "on" : ""}`} aria-pressed={!!marks[i]}
+                  aria-label={`Serie ${i + 1}`} onClick={() => toggle(ex, i)}>
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      <section className="wrap">
+        <h3>Cómo estás</h3>
+        <div className="estado" role="group" aria-label="Cómo estás">
+          {ESTADOS.map((e) => (
+            <button key={e} className={`${s.estado === e ? "on" : ""} ${e.toLowerCase()}`} aria-pressed={s.estado === e}
+              onClick={() => setField("estado", s.estado === e ? "" : e)}>{e}</button>
+          ))}
+        </div>
+        {s.estado === "Dolor" && (
+          <p className="alert" role="alert">Si es dolor punzante, para ese ejercicio y coméntalo con el fisio.</p>
+        )}
+        <label>Comentario (opcional)
+          <textarea rows="3" value={s.comment} onChange={(e) => setField("comment", e.target.value)} />
+        </label>
+        <button className={`primary ${s.completed ? "undo" : ""}`} onClick={() => setField("completed", !s.completed)}>
+          {s.completed ? "Fisio completada. Desmarcar" : "Marcar fisio completada"}
         </button>
       </section>
     </main>

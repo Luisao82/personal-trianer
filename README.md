@@ -32,3 +32,8 @@ Si cambias una variable de entorno en Vercel hay que hacer **Redeploy** para que
 
 ## Cambiar el plan
 Edita `src/plan.js` (ejercicios, series, objetivos y sesiones) y haz push. Las sesiones no tienen fecha fija: la fecha real se guarda al entrenar y se puede corregir dentro de cada sesión.
+
+## Fisio
+Sección aparte (botón "Fisio" en el inicio) con los ejercicios del fisio, siempre los mismos y con su dibujo en pixel art.
+- Ejercicios, series y repeticiones: `src/fisio.js`. Dibujos: `public/fisio/<id>.png` (hoja de 2 fotogramas de 64x40 px que se alternan).
+- Se guarda una fila de Notion por día, en la misma base de datos, con `Dia` = "Fisio", sin semana y con nombre "Fisio AAAA-MM-DD". La opción "Fisio" de la propiedad `Dia` la crea Notion sola la primera vez.

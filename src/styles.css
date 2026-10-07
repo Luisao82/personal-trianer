@@ -170,3 +170,47 @@ input[type="date"] { color-scheme: dark; min-height: 48px; }
 @media (prefers-reduced-motion: reduce) {
   .card:active, .set:active, .primary:active, .rir button:active, .estado button:active { transform: none; }
 }
+
+/* Fisio */
+.secondary {
+  margin-top: 16px; width: calc(100% - var(--edge)); min-height: 56px; padding: 10px 12px;
+  background: var(--panel); color: var(--text);
+  border: var(--edge) solid var(--ink);
+  font: 400 13px/1.5 var(--pixel);
+  box-shadow: inset var(--edge) var(--edge) 0 rgba(255, 255, 255, 0.08),
+              inset calc(var(--edge) * -1) calc(var(--edge) * -1) 0 rgba(0, 0, 0, 0.2),
+              var(--edge) var(--edge) 0 var(--ink);
+}
+.secondary:hover { background: var(--panel-hover); }
+.secondary:active { transform: translate(var(--edge), var(--edge)); box-shadow: inset var(--edge) var(--edge) 0 rgba(255, 255, 255, 0.08); }
+
+.daypick { display: grid; gap: 6px; margin: 4px var(--edge) 0 0; color: var(--muted); font-size: 16px; }
+.recent { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 4px; }
+.recent > span { flex: 1 0 100%; font-size: 16px; color: var(--muted); }
+.chip {
+  min-height: 44px; padding: 0 12px; background: var(--slot); font-weight: 600;
+  border: var(--edge) solid var(--ink);
+}
+.chip.on { background: var(--text); color: var(--ink); }
+.chip.finished:not(.on) { color: var(--ok); }
+.progress { margin: 14px var(--edge) 14px 0; font-weight: 600; color: var(--muted); }
+
+/* Dibujo del ejercicio: hoja de 2 fotogramas que se alternan */
+.fisio-art {
+  width: 100%; aspect-ratio: 64 / 40; margin-bottom: 12px;
+  background-color: var(--slot); background-repeat: no-repeat; background-size: 200% 100%;
+  image-rendering: pixelated;
+  border: var(--edge) solid var(--ink);
+  animation: fisio-flip 1.4s steps(1, end) infinite;
+}
+@keyframes fisio-flip {
+  0%, 100% { background-position: 0 0; }
+  50% { background-position: 100% 0; }
+}
+.zone { margin: 4px 0 0; color: var(--gold); font-size: 15px; font-weight: 600; }
+.zone + .note { margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fisio-art { animation: none; }
+  .secondary:active { transform: none; }
+}
