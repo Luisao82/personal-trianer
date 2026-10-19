@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SESSIONS, DAYS, WARMUP, WEEK_RULES } from "./plan.js";
+import { SESSIONS, WEEKS, DAYS, WARMUP, WEEK_RULES, exercisesFor } from "./plan.js";
 import { fetchSessions, pushSession } from "./api.js";
 import { buildSummary, buildFisioSummary, formatDate } from "./summary.js";
 import { FISIO, FISIO_INTRO } from "./fisio.js";
@@ -38,9 +38,9 @@ const todayISO = () => {
 };
 
 const doneCount = (entry, s) =>
-  DAYS[entry.day].exercises.reduce((n, e) => n + (s?.done?.[e.id] || []).filter(Boolean).length, 0);
+  exercisesFor(entry.day, entry.week).reduce((n, e) => n + (s?.done?.[e.id] || []).filter(Boolean).length, 0);
 const totalSets = (entry) =>
-  DAYS[entry.day].exercises.reduce((n, e) => n + e.weeks[entry.week - 1].sets, 0);
+  exercisesFor(entry.day, entry.week).reduce((n, e) => n + e.sets, 0);
 
 export default function App() {
   const [pin, setPin] = useState(() => localStorage.getItem(PIN_KEY) || "");
@@ -245,12 +245,14 @@ function Home({ onStart, onFisio, onLogout }) {
 
 function SessionList({ store, onOpen, onHome }) {
   const next = SESSIONS.find((c) => !store[c.id]?.completed);
+  const currentWeek = next ? next.week : WEEKS[WEEKS.length - 1];
+  const weekDone = (week) => SESSIONS.filter((c) => c.week === week).every((c) => store[c.id]?.completed);
   return (
     <main>
       <button className="link" onClick={onHome}>Volver al inicio</button>
-      {[1, 2].map((week) => (
-        <section key={week}>
-          <h2>Semana {week}</h2>
+      {WEEKS.map((week) => (
+        <details className="week" key={week} open={week === currentWeek}>
+          <summary><h2>Semana {week}{weekDone(week) ? " (completada)" : ""}</h2></summary>
           <p className="rule">{WEEK_RULES[week]}</p>
           <ul className="cards">
             {SESSIONS.filter((c) => c.week === week).map((c) => {
@@ -275,7 +277,7 @@ function SessionList({ store, onOpen, onHome }) {
               );
             })}
           </ul>
-        </section>
+        </details>
       ))}
     </main>
   );
@@ -283,6 +285,7 @@ function SessionList({ store, onOpen, onHome }) {
 
 function SessionView({ entry, s, update, back }) {
   const day = DAYS[entry.day];
+  const exs = exercisesFor(entry.day, entry.week);
   const toggle = (ex, i, sets) =>
     update((d) => {
       const arr = d.done[ex.id]?.slice() || Array(sets).fill(false);
@@ -310,24 +313,31 @@ function SessionView({ entry, s, update, back }) {
         <ul>{WARMUP.map((w) => <li key={w}>{w}</li>)}</ul>
       </details>
 
-      {day.exercises.map((ex) => {
-        const cfg = ex.weeks[entry.week - 1];
+      {exs.map((ex) => {
         const done = s.done[ex.id] || [];
         return (
           <section className={`exercise ${ex.block}`} key={ex.id}>
             <div className="ex-head">
               <h3>{ex.name}</h3>
-              <span className="target">{cfg.sets} x {cfg.target}</span>
+              <span className="target">{ex.sets} x {ex.target}</span>
             </div>
             {ex.note && <p className="note">{ex.note}</p>}
             <div className="sets" role="group" aria-label={`Series de ${ex.name}`}>
-              {Array.from({ length: cfg.sets }, (_, i) => (
+              {Array.from({ length: ex.sets }, (_, i) => (
                 <button key={i} className={`set ${done[i] ? "on" : ""}`} aria-pressed={!!done[i]}
-                  aria-label={`Serie ${i + 1}`} onClick={() => toggle(ex, i, cfg.sets)}>
+                  aria-label={`Serie ${i + 1}`} onClick={() => toggle(ex, i, ex.sets)}>
                   {i + 1}
                 </button>
               ))}
             </div>
+            {ex.why && (
+              <details className="explain">
+                <summary>Para qué sirve y cómo se hace</summary>
+                <p>{ex.why}</p>
+                <ol>{ex.how.map((h) => <li key={h}>{h}</li>)}</ol>
+                <p className="watch"><strong>Qué vigilar.</strong> {ex.watch}</p>
+              </details>
+            )}
             <details className="extra">
               <summary>Resultado y esfuerzo (opcional)</summary>
               <label>Lo que hiciste (reps o segundos)

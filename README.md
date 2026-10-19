@@ -31,7 +31,12 @@ Si cambias una variable de entorno en Vercel hay que hacer **Redeploy** para que
 - El PIN se comprueba en el servidor en cada petición. El token de Notion nunca llega al navegador.
 
 ## Cambiar el plan
-Edita `src/plan.js` (ejercicios, series, objetivos y sesiones) y haz push. Las sesiones no tienen fecha fija: la fecha real se guarda al entrenar y se puede corregir dentro de cada sesión.
+Todo está en `src/plan.js`:
+- `EXERCISES`: cada ejercicio con su función, cómo se hace y qué vigilar (se ve desplegable dentro de la sesión).
+- `PLAN`: qué se hace cada semana en cada día (orden, series, objetivo y nota de esa semana).
+- `WEEKS`, `WEEK_RULES` y `SESSIONS`: las semanas, su regla y la secuencia de sesiones.
+
+Para añadir una semana, copia una de `PLAN`, ajusta los números, añádela a `WEEKS` y escribe su regla en `WEEK_RULES`. Las semanas ya hechas no se tocan, así que sus datos siguen intactos. Las sesiones no tienen fecha fija: la fecha real se guarda al entrenar y se puede corregir dentro de cada sesión.
 
 ## Fisio
 Sección aparte (botón "Fisio" en el inicio) con los ejercicios del fisio, siempre los mismos y con su dibujo en pixel art.

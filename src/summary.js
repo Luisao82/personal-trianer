@@ -1,4 +1,4 @@
-import { DAYS } from "./plan.js";
+import { DAYS, exercisesFor } from "./plan.js";
 import { FISIO } from "./fisio.js";
 
 export const formatDate = (d) =>
@@ -8,10 +8,9 @@ export const formatDate = (d) =>
 export function buildSummary(entry, s) {
   const day = DAYS[entry.day];
   const lines = [`Día ${entry.day} (${day.name}), semana ${entry.week}${s.date ? `, entrenada el ${s.date}` : ""}`];
-  for (const e of day.exercises) {
-    const cfg = e.weeks[entry.week - 1];
+  for (const e of exercisesFor(entry.day, entry.week)) {
     const done = (s.done?.[e.id] || []).filter(Boolean).length;
-    let l = `${e.name}: ${done}/${cfg.sets} series (objetivo ${cfg.target})`;
+    let l = `${e.name}: ${done}/${e.sets} series (objetivo ${e.target})`;
     if (s.result?.[e.id]) l += ` | resultado: ${s.result[e.id]}`;
     if (s.rir?.[e.id]) l += ` | RIR: ${s.rir[e.id]}`;
     lines.push(l);

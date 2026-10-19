@@ -223,3 +223,19 @@ input { min-width: 0; max-width: 100%; }
   .fisio-art { animation: none; }
   .secondary:active { transform: none; }
 }
+
+/* Semanas plegables: solo está abierta la semana en curso */
+.week { margin: 0; }
+.week > summary { list-style: none; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.week > summary::-webkit-details-marker { display: none; }
+.week > summary h2 { margin: 18px 0 8px; }
+.week > summary h2::before { content: "+ "; color: var(--gold); }
+.week[open] > summary h2::before { content: "- "; }
+
+/* Explicación de cada ejercicio */
+.explain { margin-top: 10px; }
+.explain summary { font-weight: 600; cursor: pointer; min-height: 32px; color: var(--gold); }
+.explain p { margin: 8px 0 0; }
+.explain ol { margin: 8px 0 0; padding-left: 24px; }
+.explain li { margin-top: 4px; }
+.explain .watch { padding: 8px 10px; background: var(--slot); border: 3px solid var(--ink); border-left-color: var(--gold); }
