@@ -239,3 +239,14 @@ input { min-width: 0; max-width: 100%; }
 .explain ol { margin: 8px 0 0; padding-left: 24px; }
 .explain li { margin-top: 4px; }
 .explain .watch { padding: 8px 10px; background: var(--slot); border: 3px solid var(--ink); border-left-color: var(--gold); }
+
+/* Objetivo y tips de la sesión */
+.goal {
+  margin: 0 var(--edge) 18px 0; padding: 12px 14px; background: var(--panel);
+  border: var(--edge) solid var(--ink); border-left-color: var(--gold);
+}
+.goal h3 { font: 400 12px/1.6 var(--pixel); color: var(--gold); margin: 0 0 6px; }
+.goal h3 + p { margin: 0 0 12px; }
+.goal ul { margin: 0; padding-left: 22px; }
+.goal li { margin-top: 6px; }
+

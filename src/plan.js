@@ -109,6 +109,17 @@ export const EXERCISES = {
     ],
     watch: "Sin kipping. Si te balanceas, reduce el recorrido hasta que puedas controlarlo.",
   },
+  "tb-neg": {
+    name: "Negativa de toes-to-bar",
+    why: "Tus piernas pasan de 90° pero no llegan a la barra: te falta fuerza en la parte alta, cuando el cuerpo se dobla por la cadera. Aquí subes con ayuda y entrenas justo ese tramo bajando despacio.",
+    how: [
+      "Cuelga con las escápulas activas.",
+      "Sube las piernas rectas hasta tocar la barra con los pies. Puedes usar un pequeño impulso para llegar.",
+      "Baja las piernas rectas en 4 s, sin que el cuerpo se balancee.",
+      "Vuelve a colgar quieto antes de la repetición siguiente.",
+    ],
+    watch: "El tramo difícil es el de la barra a los 90°: ahí es donde tienes que frenar. Si caes de golpe, sube con las rodillas un poco flexionadas y baja con ellas estiradas poco a poco.",
+  },
 
   // ---------- Día B: empuje y posiciones ----------
   "ring-support": {
@@ -151,6 +162,17 @@ export const EXERCISES = {
     ],
     watch: "Si pierdes el control en la bajada, quita altura. Cabeza delante de las manos, no entre ellas.",
   },
+  "neg-pino": {
+    name: "Negativa de flexión de pino en pared",
+    why: "Es el paso siguiente al pike con pies elevados, que ya te sale bien. Entrena el empuje vertical con la carga de todo el cuerpo y te enseña a controlar la bajada cabeza abajo.",
+    how: [
+      "Sube a pino de cara a la pared, con el pecho hacia la pared y los brazos estirados.",
+      "Baja la cabeza hacia una colchoneta fina en 3 s, con los codos a unos 45° del cuerpo.",
+      "Toca la colchoneta con la cabeza sin dejarte caer y sube con ayuda de las piernas si hace falta.",
+      "Vuelve a pino y repite.",
+    ],
+    watch: "Pon una colchoneta de 5-8 cm bajo la cabeza para limitar la profundidad. Si la bajada se descontrola, quita una repetición. Si el hombro pincha, vuelve al pike con pies elevados.",
+  },
   "remo-anillas": {
     name: "Remo en anillas",
     why: "Tirón horizontal para equilibrar tanto empuje: refuerza la espalda alta y las escápulas, y cuida el hombro.",
@@ -180,6 +202,17 @@ export const EXERCISES = {
       "Aprieta los glúteos y mantén.",
     ],
     watch: "Cuello neutro, mirando al suelo. Sube con el glúteo, no fuerces la zona lumbar.",
+  },
+  "pino-pared": {
+    name: "Pino de cara a la pared",
+    why: "Postura y línea de pino: aprender a sostener el cuerpo recto sobre las manos, con los hombros abiertos. Es la base de cualquier trabajo de pino.",
+    how: [
+      "Coloca las manos a unos 15-20 cm de la pared y sube los pies por la pared hasta quedar con el pecho hacia ella.",
+      "Empuja el suelo con las manos para subir los hombros hacia las orejas.",
+      "Aprieta glúteos y costillas hacia dentro, para que el cuerpo quede recto, sin curva en la espalda.",
+      "Mantén el tiempo marcado y baja con control.",
+    ],
+    watch: "Cuerpo recto y no un arco. Si la zona lumbar se hunde, aprieta glúteo y acerca las manos a la pared. Para la serie antes de que las muñecas protesten.",
   },
 
   // ---------- Día C: transición ----------
@@ -214,6 +247,17 @@ export const EXERCISES = {
       "Termina colgado con los brazos estirados y vuelve a subir con ayuda para repetir.",
     ],
     watch: "El tramo crítico es justo al pasar los hombros. Con goma, busca que cada repetición dure 3-5 s sin caer de golpe. En el parque, haz la negativa en barra.",
+  },
+  "trans-anillas": {
+    name: "Transición en anillas bajas con pies en el suelo",
+    why: "Es el paso intermedio entre la transición con goma en barra y el muscle-up en anillas. Con los pies en el suelo cargas menos peso sobre el agarre falso y practicas el giro de las muñecas por encima de las anillas.",
+    how: [
+      "Anillas a la altura del pecho, con el agarre falso y los pies en el suelo, un poco por delante.",
+      "Tira hasta que las anillas lleguen al pecho y pasa los codos por detrás.",
+      "Gira las muñecas por encima de las anillas y empuja hasta quedar en soporte con los brazos bloqueados. Ayúdate con las piernas lo justo.",
+      "Baja con control y vuelve a empezar.",
+    ],
+    watch: "Quita ayuda de las piernas poco a poco. Si el agarre falso te hace daño en la palma, sube las anillas o colócalas más abajo en el pliegue antes de seguir.",
   },
   "trans-goma": {
     name: "Transiciones con goma",
@@ -360,9 +404,61 @@ export const PLAN = {
       x("movilidad", 1, "10 min", "", "secundario"),
     ],
   },
+  5: {
+    A: [
+      x("tiron-alto", 5, "3 reps", "Goma azul. En las dos últimas series, prueba la goma más fina y apunta hasta dónde llegas: si no llegas al ombligo, vuelve a la azul."),
+      x("dom-pausa", 4, "5 reps", "Pausa de 2 s arriba. Termina con 1-2 reps en reserva."),
+      x("fl-tuck", 4, "3 s", "Sin goma. Si no consigues 3 s limpios, haz 3 series de 8 s con la goma roja."),
+      x("tb-neg", 3, "4 reps", "Sube con impulso pequeño y baja las piernas rectas en 4 s."),
+      x("hollow-brazos", 3, "35 s", "", "secundario"),
+    ],
+    B: [
+      x("ring-support", 4, "20 s", "Anillas giradas un poco hacia fuera. Glúteos y costillas apretados, cuerpo recto."),
+      x("fondos", 4, "8 reps", "Baja en 3 s hasta 90° de codo. Sube sin rebote."),
+      x("neg-pino", 3, "3 reps", "Baja en 3 s a una colchoneta de 5-8 cm. Pecho hacia la pared."),
+      x("remo-anillas", 3, "8 reps", "Pausa de 2 s con el pecho en las anillas."),
+      x("lsit", 4, "15-18 s", "Empuja el suelo hacia abajo. Hombros lejos de las orejas, mirada al frente.", "secundario"),
+      x("pino-pared", 3, "20 s", "De cara a la pared, cuerpo recto.", "secundario"),
+    ],
+    C: [
+      x("fg-hang", 3, "10 s", "Anillas bajas. Para antes de que la presión en la palma sea aguda."),
+      x("remo-fg", 3, "6 reps", "Cuerpo casi horizontal para que cueste más."),
+      x("trans-anillas", 3, "4 reps", "Anillas bajas, pies en el suelo. Quita ayuda de las piernas poco a poco."),
+      x("neg-mu", 3, "2 reps de 3-5 s", "Con una goma más gruesa que la de la semana 4. Para la serie si el agarre falso se abre."),
+      x("trans-goma", 3, "3 reps", "Cambia la goma negra por otra más fina, o quítala. Si no sale limpia, vuelve a la anterior."),
+      x("fondos-prof", 3, "6 reps", "Pausa de 2 s abajo. Si el hombro derecho molesta, haz fondos normales."),
+      x("movilidad", 1, "10 min", "Añade estiramiento de la base de la palma.", "secundario"),
+    ],
+  },
+  6: {
+    A: [
+      x("tiron-alto", 5, "3 reps", "Prueba la goma más fina en todas las series. Si no llegas al ombligo, vuelve a la azul."),
+      x("dom-pausa", 4, "5 reps", "Pausa de 1-2 s arriba y bajada de 3 s. Termina con 1-2 reps en reserva."),
+      x("fl-tuck", 4, "4 s", "Sin goma. Cadera a la altura de los hombros y brazos rectos."),
+      x("tb-neg", 3, "5 reps", "Baja las piernas rectas en 4 s. Tocar la barra con los pies en cada repetición."),
+      x("hollow-brazos", 3, "40 s", "", "secundario"),
+    ],
+    B: [
+      x("ring-support", 4, "25 s", "Anillas giradas hacia fuera, sin perder el cuerpo recto."),
+      x("fondos", 4, "6 reps", "Pausa de 1 s a 90° de codo. Si tienes chaleco o disco, +5 kg."),
+      x("neg-pino", 3, "4 reps", "Baja en 3 s a una colchoneta de 5-8 cm. Pecho hacia la pared."),
+      x("remo-anillas", 3, "6 reps", "Pies elevados. Cuerpo recto, pecho a las anillas."),
+      x("lsit", 4, "18-20 s", "Empuja el suelo hacia abajo. Hombros lejos de las orejas.", "secundario"),
+      x("pino-pared", 3, "25 s", "De cara a la pared, cuerpo recto.", "secundario"),
+    ],
+    C: [
+      x("fg-hang", 3, "10-12 s", "Anillas bajas. Para antes de que la presión en la palma sea aguda."),
+      x("remo-fg", 3, "6 reps", "Cuerpo casi horizontal y pausa de 1 s con el pecho en las anillas."),
+      x("trans-anillas", 3, "5 reps", "Anillas bajas, pies en el suelo. Menos ayuda de las piernas que en la semana 5."),
+      x("neg-mu", 3, "2-3 reps de 3-5 s", "Con la misma goma que en la semana 5, o una más fina si salió limpio."),
+      x("trans-goma", 3, "3 reps", "Con una sola goma."),
+      x("fondos-prof", 3, "7 reps", "Pausa de 2 s abajo. Si el hombro derecho molesta, haz fondos normales."),
+      x("movilidad", 1, "10 min", "Incluye el estiramiento de la base de la palma.", "secundario"),
+    ],
+  },
 };
 
-export const WEEKS = [1, 2, 3, 4];
+export const WEEKS = [1, 2, 3, 4, 5, 6];
 
 // Sesiones en orden. El id es la clave con la que se guardan en el móvil y en Notion.
 export const SESSIONS = WEEKS.flatMap((week) =>
@@ -378,4 +474,64 @@ export const WEEK_RULES = {
   2: "Sube solo si la semana 1 fue limpia: sin molestias al día siguiente y con las posiciones bien hechas.",
   3: "Semana de técnica: termina cada serie con 2 repeticiones en reserva. Lo explosivo va primero, con el cuerpo fresco. Si el agarre falso da dolor agudo, hormigueo o se te duermen los dedos, para ese ejercicio.",
   4: "Sube solo si la semana 3 acabó con hombros, codos y muñecas en «Bien». Si no, repite la semana 3.",
+  5: "Se sube un escalón en lo que ya domina (front lever sin goma, negativas de pino) y se recorta el volumen de agarre falso, que es donde aparece el dolor. Termina con 1-2 repeticiones en reserva.",
+  6: "Sube solo si la semana 5 acabó con hombros, codos y muñecas en «Bien» y la palma aguanta el agarre falso. Si no, repite la semana 5.",
 };
+
+// Objetivo de cada sesión y consejos para cumplirlo. Solo las semanas 5 y 6 los tienen por ahora.
+export const GOALS = {
+  5: {
+    A: {
+      objetivo: "Tu primer front lever tuck sin goma: 4 series de 3 s con la cadera a la altura de los hombros. Y llevar los pies a la barra bajando las piernas con control.",
+      tips: [
+        "Haz el tirón alto primero, con el cuerpo fresco, y descansa 2 min entre series.",
+        "En el front lever tuck, empuja la barra hacia abajo como si quisieras alargar los brazos, y sube la cadera hasta los hombros. Pide que te graben de lado para comprobar el ángulo.",
+        "En la negativa de toes-to-bar, el tramo difícil es de la barra a los 90°: ahí es donde tienes que frenar.",
+      ],
+    },
+    B: {
+      objetivo: "Soporte limpio en anillas con las anillas un poco giradas hacia fuera y el cuerpo recto, y empuje vertical controlado con las negativas de pino.",
+      tips: [
+        "En el ring support, aprieta glúteos y mete las costillas hacia dentro para no encoger la parte frontal, y mira al frente.",
+        "En el L-sit, empuja el suelo hacia abajo, saca pecho y mantén los codos bloqueados. Lo importante es el tiempo con la posición bien hecha, aunque las piernas queden un poco por debajo de la horizontal.",
+        "En la negativa de pino, coloca una colchoneta fina bajo la cabeza y baja en 3 s. No busques profundidad.",
+      ],
+    },
+    C: {
+      objetivo: "Hacer las 3 series de negativas de muscle-up sin que el agarre falso te rompa la serie, y subir a transiciones con una sola goma en pocas semanas.",
+      tips: [
+        "El dolor de la base de la palma es el límite. Haz series cortas y para cuando notes que el agarre empieza a abrirse.",
+        "Coloca la anilla en el pliegue de la base de la palma, en diagonal, con la muñeca por encima. Si hace falta, prueba una venda fina de tape antes de empezar.",
+        "Si aparece hormigueo, los dedos se duermen o hay dolor en reposo o por la noche, para el agarre falso y pregúntale al fisio.",
+      ],
+    },
+  },
+  6: {
+    A: {
+      objetivo: "Front lever tuck sin goma: 4 series de 4 s, y tocar la barra con los pies en las 5 repeticiones de la negativa de toes-to-bar.",
+      tips: [
+        "Si en la semana 5 no conseguiste 3 s limpios, repite el front lever tuck de la semana 5 con la goma roja en vez de subir.",
+        "Prueba la goma más fina en todas las series del tirón alto. Si pierdes altura, vuelve a la azul.",
+        "En la negativa de toes-to-bar, no dejes que el cuerpo se balancee al volver abajo.",
+      ],
+    },
+    B: {
+      objetivo: "Sumar tiempo en el L-sit hasta 18-20 s y empuje de fondos más pesado, con 4 repeticiones de negativa de pino controladas.",
+      tips: [
+        "El lastre en los fondos es opcional: solo si la semana 5 salió con 1-2 repeticiones en reserva y el hombro está bien.",
+        "En el remo con pies elevados, mantén el cuerpo recto de talones a cabeza y tira del pecho a las anillas.",
+        "En el pino de cara a la pared, para antes de que las muñecas protesten.",
+      ],
+    },
+    C: {
+      objetivo: "Transiciones con una sola goma y negativas de muscle-up en anillas con control, con la palma aguantando el agarre falso.",
+      tips: [
+        "Si la palma está muy sensible, deja las negativas en 2 reps y no subas la goma más fina.",
+        "En las transiciones en anillas bajas, usa cada semana un poco menos de ayuda con las piernas.",
+        "Apunta en el comentario de la sesión cómo está la palma al día siguiente: es el dato que decide la semana 7.",
+      ],
+    },
+  },
+};
+
+export const goalFor = (day, week) => GOALS[week]?.[day] || null;

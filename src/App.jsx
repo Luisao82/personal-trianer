@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SESSIONS, WEEKS, DAYS, WARMUP, WEEK_RULES, exercisesFor } from "./plan.js";
+import { SESSIONS, WEEKS, DAYS, WARMUP, WEEK_RULES, exercisesFor, goalFor } from "./plan.js";
 import { fetchSessions, pushSession } from "./api.js";
 import { buildSummary, buildFisioSummary, formatDate } from "./summary.js";
 import { FISIO, FISIO_INTRO } from "./fisio.js";
@@ -286,6 +286,7 @@ function SessionList({ store, onOpen, onHome }) {
 function SessionView({ entry, s, update, back }) {
   const day = DAYS[entry.day];
   const exs = exercisesFor(entry.day, entry.week);
+  const goal = goalFor(entry.day, entry.week);
   const toggle = (ex, i, sets) =>
     update((d) => {
       const arr = d.done[ex.id]?.slice() || Array(sets).fill(false);
@@ -307,6 +308,15 @@ function SessionView({ entry, s, update, back }) {
       <p className="rule">
         Semana {entry.week}{s.date ? `, entrenada el ${formatDate(s.date)}` : ""}. {WEEK_RULES[entry.week]}
       </p>
+
+      {goal && (
+        <section className="goal">
+          <h3>Objetivo de hoy</h3>
+          <p>{goal.objetivo}</p>
+          <h3>Tips</h3>
+          <ul>{goal.tips.map((t) => <li key={t}>{t}</li>)}</ul>
+        </section>
+      )}
 
       <details className="warmup">
         <summary>Calentamiento (8-10 min)</summary>
